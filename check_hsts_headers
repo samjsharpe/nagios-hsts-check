@@ -23,17 +23,18 @@ def unknown(message):
 try:
     parser = argparse.ArgumentParser(description='Check for Strict-Transport-Security header')
     parser.add_argument('--url', help='the URL to check', required=True)
-    parser.add_argument('--maxage', help='optional expected minimal value for max-age (default 10368000, i.e. 120 days))',
-            required=False, type=int, default=10368000)
+    parser.add_argument('--maxage',
+                        help='optional expected minimal value for max-age (default 10368000, i.e. 120 days))',
+                        required=False, type=int, default=10368000)
     args = parser.parse_args()
 
-    url     = args.url
-    maxage  = args.maxage
+    url = args.url
+    maxage = args.maxage
 
     req = requests.head(url)
     if 'Strict-Transport-Security' in req.headers:
         hsts = req.headers['Strict-Transport-Security']
-        m = re.match("^max-age=(\d+)$", hsts)
+        m = re.match("^max-age=(\\d+)$", hsts)
         if m:
             found_age = int(m.group(1))
             if found_age < maxage:
@@ -41,7 +42,7 @@ try:
             else:
                 ok("Strict-Transport-Security detected with long-lived max-age ({0})".format(found_age))
         else:
-            critical("Strict-Transport-Security detected, but with invalid value ({0})".format(sts_header))
+            critical("Strict-Transport-Security detected, but with invalid value ({0})".format(hsts))
     else:
         critical("No Strict-Transport-Security detected")
 except Exception as e:
