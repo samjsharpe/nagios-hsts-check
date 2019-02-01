@@ -8,18 +8,6 @@ def nagios_exit(message, code):
     print(message)
     sys.exit(code)
 
-def ok(message):
-    nagios_exit("OK: " + message, 0)
-
-def warning(message):
-    nagios_exit("WARNING: " + message, 1)
-
-def critical(message):
-    nagios_exit("CRITICAL: " + message, 2)
-
-def unknown(message):
-    nagios_exit("UNKNOWN: " + message, 3)
-
 try:
     parser = argparse.ArgumentParser(description='Check for Strict-Transport-Security header')
     parser.add_argument('--url', help='the URL to check', required=True)
@@ -47,9 +35,11 @@ try:
         if m:
             found_age = int(m.group(1))
             if found_age < maxage:
-                warn_msg.append("max-age directive found, but not long-lived ({0}, while {1} is required).".format(found_age, maxage))
+                warn_msg.append(
+                    "max-age directive found, but not long-lived ({0}, while {1} is required).".
+                    format(found_age, maxage))
             else:
-                 ok_msg.append("Long-lived max-age directive found ({0}).".format(found_age))
+                ok_msg.append("Long-lived max-age directive found ({0}).".format(found_age))
             if includesubdomains:
                 s = re.match(".*\\b(includesubdomains)\\b.*", hsts, re.IGNORECASE)
                 if s:
@@ -61,11 +51,12 @@ try:
     else:
         crit_msg.append("No Strict-Transport-Security header detected.")
 except Exception as e:
-    unknown("Unknown error: {0}.".format(e))
+    nagios_exit("UNKNOWN: Unknown error: {0}.".format(e), 3)
 
+# Exit with accumulated message(s)
 if crit_msg:
-    critical(' '.join(crit_msg + warn_msg))
+    nagios_exit("CRITICAL: " + ' '.join(crit_msg + warn_msg), 2)
 elif warn_msg:
-    warning(' '.join(warn_msg))
+    nagios_exit("WARNING: " + ' '.join(warn_msg), 1)
 else:
-    ok(' '.join(ok_msg))
+    nagios_exit("OK: " + ' '.join(ok_msg), 0)
