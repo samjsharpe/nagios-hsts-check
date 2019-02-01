@@ -24,10 +24,10 @@ try:
     parser = argparse.ArgumentParser(description='Check for Strict-Transport-Security header')
     parser.add_argument('--url', help='the URL to check', required=True)
     parser.add_argument('--maxage',
-                        help='optional expected minimal value for max-age (default 10368000, i.e. 120 days))',
+                        help='Minimum lifetime (max-age directive), default 10368000s (120 days).',
                         required=False, type=int, default=10368000)
     parser.add_argument('--includesubdomains',
-                        help='check for the includeSubdomains directive',
+                        help='Check for the existance of the includeSubdomains directive',
                         action='store_true')
     args = parser.parse_args()
 
