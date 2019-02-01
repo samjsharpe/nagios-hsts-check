@@ -12,16 +12,18 @@ Nagios or Icinga, Python3 with the `argparse`, `sys` and `requests` modules
 ```
 $ ./check_hsts_headers --help
 usage: check_hsts_headers [-h] --url URL [--maxage MAXAGE]
+                          [--includesubdomains]
 
 Check for Strict-Transport-Security header
 
 optional arguments:
-  -h, --help       show this help message and exit
-  --url URL        the URL to check
-  --maxage MAXAGE  optional expected minimal value for max-age (default:
-                   10368000 (i.e. 120 days))
+  -h, --help           show this help message and exit
+  --url URL            the URL to check
+  --maxage MAXAGE      Minimum lifetime (max-age directive), default 10368000s
+                       (120 days).
+  --includesubdomains  Check for the existance of the includeSubdomains
+                       directive
 ```
-
 ## Notes
 
 This check only looks at the HSTS header. Anything else is considered irrelevant
