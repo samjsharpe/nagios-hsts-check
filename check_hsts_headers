@@ -3,6 +3,7 @@ import argparse
 import sys
 import re
 import requests
+import urllib3
 
 def nagios_exit(message, code):
     print(message)
@@ -17,13 +18,28 @@ try:
     parser.add_argument('--includesubdomains',
                         help='Check for the existance of the includeSubdomains directive',
                         action='store_true')
+    parser.add_argument('--verify',
+                        help='Verify the TLS certificate (default)',
+                        dest='verify',
+                        action='store_true')
+    parser.add_argument('--no-verify',
+                        help='Do not verify the TLS certificate',
+                        dest='verify',
+                        action='store_false')
+
+    parser.set_defaults(verify=True)
     args = parser.parse_args()
 
     url = args.url
     maxage = args.maxage
     includesubdomains = args.includesubdomains
+    verify = args.verify
 
-    req = requests.head(url)
+
+    if not verify:
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    req = requests.head(url, verify=verify)
     # start with clean slate
     ok_msg = []
     warn_msg = []
